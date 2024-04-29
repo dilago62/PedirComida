@@ -7,13 +7,8 @@ class Carta():
     Tiene los métodos necesarios para crear una lista con
     todos los productos y seleccionar cantidades cada uno.
     """
-
-    productos: list[Producto | MenuProducto]
-    lv: flet.ListView
-    tabs: flet.Tabs
-
     def __init__(self, productos: list[Producto]) -> None:
-        self.productos = productos
+        self.productos:list[Producto | MenuProducto] = productos
 
     def cargar_vista(self, page:flet.Page, navegacion:flet.NavigationBar) -> flet.View:
         """
@@ -25,7 +20,7 @@ class Carta():
         :returns: Una vista con la lista y el botón.
         """
 
-        self.tabs = flet.Tabs(
+        self.tabs:flet.Tabs = flet.Tabs(
                 tabs=[
                     flet.Tab(
                         text="Todo",
@@ -65,7 +60,7 @@ class Carta():
         :param page: Se actualiza cuando os datos que se han cargado."""
         indice = self.tabs.selected_index
         tab:flet.Tab = self.tabs.tabs[indice]
-        self.lv = tab.content
+        self.lv:flet.ListView = tab.content
         if indice==0:
             self.cargar_productos(page)
         elif indice==1:

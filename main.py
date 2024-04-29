@@ -24,13 +24,9 @@ class Interfaz():
     Tiene los metodos para moverse entre vistas y cargar las bases de la aplicación.
     """
 
-    total = 0.00
+    total:float = 0.00
 
     pedir_productos:list[Producto | MenuProducto] = []
-
-    page:flet.Page
-
-    navigation_bar:flet.NavigationBar
 
     def __init__(self, page: flet.Page) -> None:
         """
@@ -38,7 +34,7 @@ class Interfaz():
 
         :param page: La página a la que se le cambiará la ruta.
         """
-        self.page = page
+        self.page:flet.Page = page
         self.aspecto_base()
         page.on_route_change=lambda _: self.cambiar_ruta()
         self.barra_navegacion()
@@ -56,7 +52,7 @@ class Interfaz():
 
     def barra_navegacion(self) -> None:
         """Crea y guarda una barra de navegación."""
-        navigation_bar = flet.NavigationBar(
+        self.navigation_bar:flet.NavigationBar = flet.NavigationBar(
             destinations=[
                 flet.NavigationDestination(icon=flet.icons.BOOK_OUTLINED,
                     selected_icon=flet.icons.BOOK, label="Carta",),
@@ -68,9 +64,8 @@ class Interfaz():
                 ),
             ]
         )
-        navigation_bar.on_change=lambda _:self.cambio_navegacion()
-        navigation_bar.visible=True
-        self.navigation_bar = navigation_bar
+        self.navigation_bar.on_change=lambda _:self.cambio_navegacion()
+        self.navigation_bar.visible=True
 
     def cambio_navegacion(self) -> None:
         """

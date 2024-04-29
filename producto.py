@@ -8,13 +8,7 @@ class Producto():
     """
     Guarda los datos de un producto.
     """
-    nombre:str
-    precio:float
     seleccionado:int = 0
-    id_producto:int
-    descripcion:str
-    menu:str
-    total:float
     imagen:str = variables.NO_IMAGEN
 
     def __init__(self, nombre:str | None = None, id_producto:int | None = None,
@@ -25,15 +19,15 @@ class Producto():
         producto con los atributos mínimos para hacer un envío de datos.
         """
         if producto is None:
-            self.nombre=nombre
-            self.precio=precio
-            self.id_producto = id_producto
-            self.menu = menu
-            self.descripcion = descripcion
+            self.nombre:str = nombre
+            self.precio:float = precio
+            self.id_producto:int = id_producto
+            self.menu:str = menu
+            self.descripcion:str = descripcion
         else:
-            self.nombre=producto.nombre
-            self.precio=producto.precio
-            self.id_producto = producto.id_producto
+            self.nombre:str = producto.nombre
+            self.precio:float = producto.precio
+            self.id_producto:int = producto.id_producto
             self.seleccionado = producto.seleccionado
 
 
@@ -41,23 +35,18 @@ class Producto():
         """
         Multiplica precio por seleccionado y lo almacena en total.
         """
-        self.total=self.seleccionado*self.precio
+        self.total:float=self.seleccionado*self.precio
 
 class MenuProducto():
     """
     Almacena unos productos, agrupádolos para formar un menú.
     """
-    primero:Producto
-    segundo:Producto
-    bebida:Producto
-    postre:Producto
-
     def __init__(self, primero:Producto, segundo:Producto,
                 bebida:Producto, postre:Producto) -> None:
-        self.primero = primero
-        self.segundo = segundo
-        self.postre = postre
-        self.bebida = bebida
+        self.primero:Producto = primero
+        self.segundo:Producto = segundo
+        self.postre:Producto = postre
+        self.bebida:Producto = bebida
 
     def get_info(self) -> str:
         """
@@ -126,13 +115,9 @@ class Fila():
     """
     Crea objetos fila para añadir a listas.
     """
-    producto:Producto
-    page:flet.Page
-    tf:flet.TextField
-    imagen: flet.Image
     def __init__(self, page:flet.Page, producto:Producto) -> None:
-        self.page=page
-        self.producto=producto
+        self.page:flet.Page=page
+        self.producto:Producto=producto
 
     def crear_fila(self) -> flet.Row:
         """
@@ -142,11 +127,11 @@ class Fila():
         :returns: Un objeto row con texto y los botones y el indicador de
         la cantidad seleccionada, vinculado a un producto.
         """
-        self.tf = flet.Text(self.producto.seleccionado,
+        self.tf:flet.TextField = flet.Text(self.producto.seleccionado,
                             text_align=flet.TextAlign.CENTER, width=45, height=45,
                             theme_style=flet.TextThemeStyle.HEADLINE_LARGE)
 
-        self.imagen= flet.Image(src_base64=self.producto.imagen, width=80,
+        self.imagen: flet.Image = flet.Image(src_base64=self.producto.imagen, width=80,
                                 height=80, fit=flet.ImageFit.FIT_HEIGHT)
         tx = flet.Text(self.recortar(self.producto.nombre.upper()), weight=flet.FontWeight.BOLD)
         tx2 = flet.Text(str(round(self.producto.precio, 2))+"€")

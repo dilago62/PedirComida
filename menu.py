@@ -7,17 +7,8 @@ class Menu():
     Tiene los métodos necesarios para crear una pantalla de menú
     y guardarlo para hacer un pedido.
     """
-
-    productos:list[Producto | MenuProducto]
-
-    dw1:flet.Dropdown
-    dw2:flet.Dropdown
-    dwp:flet.Dropdown
-    dwb:flet.Dropdown
-    lv:flet.ListView
-
     def __init__(self, productos:list[Producto | MenuProducto]) -> None:
-        self.productos = productos
+        self.productos:list[Producto | MenuProducto] = productos
 
     def cargar_vista(self, page:flet.Page, navegacion:flet.NavigationBar) -> flet.View:
         """
@@ -27,12 +18,12 @@ class Menu():
         :param navegacion: Una barra de navegación para añadir a la interfaz.
         :returns: Una vista con los dropdown, un botn y la barra de navegación.
         """
-        self.dw1 = flet.Dropdown(label="Primero")
-        self.dw2 = flet.Dropdown(label="Segundo")
-        self.dwp = flet.Dropdown(label="Postre")
-        self.dwb = flet.Dropdown(label="Bebida")
+        self.dw1:flet.Dropdown = flet.Dropdown(label="Primero")
+        self.dw2:flet.Dropdown = flet.Dropdown(label="Segundo")
+        self.dwp:flet.Dropdown = flet.Dropdown(label="Postre")
+        self.dwb:flet.Dropdown = flet.Dropdown(label="Bebida")
 
-        self.lv = flet.ListView(auto_scroll=True, expand=True)
+        self.lv:flet.ListView = flet.ListView(auto_scroll=True, expand=True)
         self.actualizar_menus(page)
 
         anhadir = flet.FilledButton("Añadir al pedido",

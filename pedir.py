@@ -13,21 +13,14 @@ class Pago():
     Tiene los métodos necesarios para iniciar la patalla final,
     probar los datos y enviar la información.
     """
-
-    drop: flet.Dropdown
-    tel: flet.TextField
-    precio: float
-    notas: flet.TextField
-    page: flet.Page
-    productos:list[Producto | MenuProducto]
     manhana:bool = False
 
 
     def __init__(self, precio: float, page:flet.Page,
                 productos:list[Producto | MenuProducto]) -> None:
-        self.precio = precio
-        self.page = page
-        self.productos = productos
+        self.precio:float = precio
+        self.page:flet.Page = page
+        self.productos:list[Producto | MenuProducto] = productos
 
     def cargar_vista(self, total:float, navigacion:flet.NavigationBar) -> None:
         """
@@ -37,11 +30,11 @@ class Pago():
         :param total: Para mostrar en el método confirmar.
         :param navigacion: Una barra de navegación para añadir a la interfaz.
         """
-        self.drop = flet.Dropdown(label="Hora de recogida")
-        self.tel = flet.TextField(label="Teléfono de contacto", prefix_text="+34 ",
+        self.drop:flet.Dropdown = flet.Dropdown(label="Hora de recogida")
+        self.tel:flet.TextField = flet.TextField(label="Teléfono de contacto", prefix_text="+34 ",
                                 input_filter=flet.NumbersOnlyInputFilter(),
                                 max_length=9, keyboard_type=flet.KeyboardType.PHONE)
-        self.notas = flet.TextField(label="Anotaciones", multiline=True)
+        self.notas:flet.TextField = flet.TextField(label="Anotaciones", multiline=True)
         confirmar = flet.FilledButton("Confirmar pedido",
                                 on_click=lambda _:self.confirmar(total))
         self.cargar_dropdown()
@@ -103,6 +96,8 @@ class Pago():
     def preparar(self, total:float) -> None:
         """
         Transforma la lista de productos a un json parra enviarlos.
+        
+        :param total: El precio total del pedido.
         """
         productos_pedido = self.productos_envio()
         recoger = datetime.now()
@@ -133,13 +128,20 @@ class Pago():
         else:
             self.page.dialog = flet.AlertDialog(title= flet.Text("Ha ocurrido un error"),
                                 content=flet.Text("Su pedido no ha podido realizarse"), open=True)
+        self.limpiar_productos()
+        self.page.update()
+        
+    def limpiar_productos(self) -> None:
+        """
+        Vacia la lista de menús y establece la cantidad seleccionada de cada producto a cero.
+        """ 
+        copia = []
         for item in self.productos:
-            print(type(item))
             if isinstance(item, Producto):
                 item.seleccionado=0
-            elif isinstance(item, MenuProducto):
-                self.productos.remove(item)
-        self.page.update()
+                copia.append(item)
+        self.productos.clear()
+        self.productos = copia
 
     def comprobar(self, total) -> None:
         """
