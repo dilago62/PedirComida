@@ -7,6 +7,8 @@ from pedir import Pago
 from menu import Menu
 import variables
 
+ACTUALIZAR=7
+
 class Inicio():
     """
     Contiene el método main para iniciar la aplicación
@@ -14,19 +16,23 @@ class Inicio():
     def main(self:flet.Page) -> None:
         """
         Inicia el programa y la página y lo envía a la interfaz.
-
-        :param page: La página principal que se usará para el programa.
         """
         Interfaz(self)
 
 class Interfaz():
     """
     Tiene los metodos para moverse entre vistas y cargar las bases de la aplicación.
+    
+    Variables de clase:
+    page: página principal para crear la interfaz
+    navigation_bar: barra de navegación para añadir a las vistas
+    productos: lista de los productos seleccionados por el usuario
+    total: el precio total del pedido
     """
 
     total:float = 0.00
 
-    pedir_productos:list[Producto | MenuProducto] = []
+    productos:list[Producto | MenuProducto] = []
 
     def __init__(self, page: flet.Page) -> None:
         """
@@ -42,6 +48,7 @@ class Interfaz():
 
     def aspecto_base(self) -> None:
         """Crea el formato básico para la página."""
+        self.page.theme = variables.ESQUEMA
         self.page.add(flet.ProgressRing())
         self.page.vertical_alignment=flet.MainAxisAlignment.CENTER
         self.page.horizontal_alignment=flet.CrossAxisAlignment.CENTER
@@ -57,12 +64,12 @@ class Interfaz():
                 flet.NavigationDestination(icon=flet.icons.BOOK_OUTLINED,
                     selected_icon=flet.icons.BOOK, label="Carta",),
                 flet.NavigationDestination(icon=flet.icons.FOOD_BANK,
-                    selected_icon=flet.icons.FOOD_BANK_SHARP, label="Menu del día"),
+                    selected_icon=flet.icons.FOOD_BANK_SHARP, label="Menu del día",),
                 flet.NavigationDestination(
                     icon=flet.icons.PRICE_CHECK,
-                    label="Pagar",
+                    label="Pagar", 
                 ),
-            ]
+            ], indicator_shape=flet.CircleBorder()
         )
         self.navigation_bar.on_change=lambda _:self.cambio_navegacion()
         self.navigation_bar.visible=True
@@ -88,24 +95,24 @@ class Interfaz():
         Si no hay productos los intenta cargar. Si no lo consigue solo muestra el aviso.
         """
         self.page.views.clear()
-        if not self.pedir_productos:
+        if not self.productos:
             productos = self.cargar_productos()
         else:
             productos = True
         if self.page.route == "/confirmar":
             self.navigation_bar.selected_index = 2
             self.calcular_total()
-            vista = Pago(self.total, self.page, self.pedir_productos)
+            vista = Pago(self.total, self.page, self.productos)
             self.page.views.append(vista.cargar_vista(self.total, self.navigation_bar))
         else:
             if productos:
                 if self.page.route == "/menu":
                     self.navigation_bar.selected_index = 1
-                    vista = Menu(self.pedir_productos)
+                    vista = Menu(self.productos)
                     self.page.views.append(vista.cargar_vista(self.page, self.navigation_bar))
                 else:
                     self.navigation_bar.selected_index = 0
-                    vista = Carta(self.pedir_productos)
+                    vista = Carta(self.productos)
                     self.page.views.append(vista.cargar_vista(self.page, self.navigation_bar))
                     vista.cambiar_filtro(self.page)
         self.page.update()
@@ -133,7 +140,7 @@ class Interfaz():
                             producto.menu=p["categ"]
                         if p["image"] != "\u0000":
                             producto.imagen = p["image"]
-                        self.pedir_productos.append(producto)
+                        self.productos.append(producto)
                     return True
                 else:
                     self.error("No hay productos a la venta")
@@ -178,11 +185,11 @@ class Interfaz():
         """
         Multiplica el precio por la cantidad seleccionada de los productos y los suma.
         """
-        if len(self.pedir_productos)>0:
+        if len(self.productos)>0:
             total:float = 0.0
-            for producto in self.pedir_productos:
+            for producto in self.productos:
                 if isinstance(producto, Producto):
                     total+=producto.precio*float(producto.seleccionado)
             self.total = round(total, 2)
 
-flet.app(target=Inicio.main, assets_dir="assets")
+flet.app(target=Inicio.main)

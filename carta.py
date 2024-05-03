@@ -6,6 +6,11 @@ class Carta():
     """
     Tiene los métodos necesarios para crear una lista con
     todos los productos y seleccionar cantidades cada uno.
+    
+    Variables de clase:
+    productos: lista de los productos seleccionados por el usuario
+    tabs: el meú para filtrar los platos que se muestran
+    lv: una lista con todos los productos disponibles para la categoría actual
     """
     def __init__(self, productos: list[Producto]) -> None:
         self.productos:list[Producto | MenuProducto] = productos
@@ -42,6 +47,10 @@ class Carta():
                         text="Bebidas",
                         content=flet.ListView(spacing=10, expand=True)
                     ),
+                    flet.Tab(
+                        text="Otros",
+                        content=flet.ListView(spacing=10, expand=True)
+                    ),
                 ],
             expand=1,
             selected_index=0,
@@ -71,6 +80,8 @@ class Carta():
             self.cargar_productos(page, "Postres")
         elif indice==4:
             self.cargar_productos(page, "Bebidas")
+        elif indice==5:
+            self.cargar_productos(page, "Otro")
         page.update()
 
     def cargar_productos(self, page:flet.Page, filtro:str | None = None) -> None:

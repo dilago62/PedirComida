@@ -6,6 +6,14 @@ class Menu():
     """
     Tiene los métodos necesarios para crear una pantalla de menú
     y guardarlo para hacer un pedido.
+    
+    Variables de clase:
+    productos: lista de los productos seleccionados por el usuario
+    dw1: desplegable para seleccionar el primero
+    dw2: desplegable para seleccionar el segundo
+    dwp: desplegable para seleccionar el postre
+    dwb: desplegable para seleccionar la bebida
+    lv: lista para mostrar los menús seleccionados
     """
     def __init__(self, productos:list[Producto | MenuProducto]) -> None:
         self.productos:list[Producto | MenuProducto] = productos

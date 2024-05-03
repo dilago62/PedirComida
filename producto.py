@@ -12,7 +12,7 @@ class Producto():
     imagen:str = variables.NO_IMAGEN
 
     def __init__(self, nombre:str | None = None, id_producto:int | None = None,
-                precio:float | None = None, menu:str | None = None,
+                precio:float | None = None, menu:str | None = "Otro",
                 descripcion:str | None = None, producto:Self | None = None) -> None:
         """
         Si recibe un producto, ignora el resto de datosrecibidos y crea un
@@ -76,13 +76,14 @@ class MenuProducto():
                 +self.postre.nombre+" - "
                 +self.bebida.nombre,
                 icon=flet.icons.INFO,
-                color=flet.colors.BLACK, bgcolor=flet.colors.TRANSPARENT,
                 icon_color=flet.colors.BLUE, elevation=0,
                 on_click=lambda _:self.mostrar_info(page),
-                style=flet.ButtonStyle(shape=flet.RoundedRectangleBorder(radius=0))),
+                style=flet.ButtonStyle(shape=flet.RoundedRectangleBorder(radius=30),
+                                        padding=0)
+                ),
             dismiss_direction=flet.DismissDirection.HORIZONTAL,
-            background=flet.Container(bgcolor=flet.colors.RED_300),
-            secondary_background=flet.Container(bgcolor=flet.colors.RED_300),
+            background=flet.Container(bgcolor=flet.colors.RED_400),
+            secondary_background=flet.Container(bgcolor=flet.colors.RED_700),
             on_dismiss=lambda _: self.eliminar_menu(productos))
 
     def eliminar_menu(self, productos:list[Producto | Self]) -> None:
@@ -138,7 +139,7 @@ class Fila():
         ibmen = flet.IconButton(icon=flet.icons.REMOVE,
                                 icon_color=flet.colors.RED, on_click=lambda _:self.click_menos(), )
         ibmas = flet.IconButton(flet.icons.ADD, on_click=lambda _:self.click_mas())
-        ibinfo = flet.IconButton(flet.icons.INFO, on_click=lambda _:self.mostrar_info())
+        ibinfo = flet.IconButton(flet.icons.INFO, icon_color=flet.colors.BLUE, on_click=lambda _:self.mostrar_info())
 
         row2 = flet.Row(
             controls=[

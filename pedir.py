@@ -1,7 +1,6 @@
 """Contiene la clase Pago"""
 import json
 from datetime import datetime, timedelta
-import time
 import flet
 import requests
 from producto import Producto, MenuProducto
@@ -12,9 +11,15 @@ class Pago():
     """
     Tiene los métodos necesarios para iniciar la patalla final,
     probar los datos y enviar la información.
+    
+    Variables de clase:
+    precio: valor recibido con el precio total de los productos
+    page: pagina, para actualizar y colocar los componentes
+    productos: lista de los productos seleccionados por el usuario
+    drop: desplegable para seleccionar día y hora de recogida
+    tel: campo de texto para el teléfono del usuario
+    notas: campo de texto para que el usuario las añada al pedido
     """
-    manhana:bool = False
-
 
     def __init__(self, precio: float, page:flet.Page,
                 productos:list[Producto | MenuProducto]) -> None:
@@ -30,7 +35,7 @@ class Pago():
         :param total: Para mostrar en el método confirmar.
         :param navigacion: Una barra de navegación para añadir a la interfaz.
         """
-        self.drop:flet.Dropdown = flet.Dropdown(label="Hora de recogida")
+        self.drop:flet.Dropdown = flet.Dropdown(label="Hora de recogida", alignment=flet.alignment.center)
         self.tel:flet.TextField = flet.TextField(label="Teléfono de contacto", prefix_text="+34 ",
                                 input_filter=flet.NumbersOnlyInputFilter(),
                                 max_length=9, keyboard_type=flet.KeyboardType.PHONE)
@@ -63,7 +68,7 @@ class Pago():
         if self.validar():
             self.comprobar(total)
         else:
-            self.page.go("/")
+            self.page.dialog.on_dismiss=lambda _:self.page.go("/")
 
     def productos_envio(self) -> list[Producto | MenuProducto]:
         """
@@ -100,22 +105,20 @@ class Pago():
         :param total: El precio total del pedido.
         """
         productos_pedido = self.productos_envio()
-        recoger = datetime.now()
-        if self.manhana:
-            recoger += timedelta(1)
-        recogida = recoger.strftime("%Y-%m-%d")
-        recogida += " " + self.drop.value + ":00"
+        recogida = self.get_recogida()
+        print(recogida)
         transformado = {}
         products = []
         for producto in productos_pedido:
             if isinstance(producto, Producto):
-                guardar = {"product_id":producto.id_producto,
-                            "name":producto.nombre,
-                            "price_unit":producto.precio,
-                            "qty":producto.seleccionado,
-                            "price_subtotal": producto.total,
-                            "price_subtotal_incl": producto.total}
-                products.append(guardar)
+                if producto.seleccionado>0:
+                    guardar = {"product_id":producto.id_producto,
+                                "name":producto.nombre,
+                                "price_unit":producto.precio,
+                                "qty":producto.seleccionado,
+                                "price_subtotal": producto.total,
+                                "price_subtotal_incl": producto.total}
+                    products.append(guardar)
         transformado["products"] = products
         transformado["total"] = total
         transformado["client_phone"] = self.tel.value
@@ -124,10 +127,12 @@ class Pago():
         resultado = json.dumps(transformado)
         if requests.post(variables.PEDIDO, data=resultado, timeout=20).ok:
             self.page.dialog = flet.AlertDialog(title= flet.Text("Pedido realizado"),
-                                content=flet.Text("Su pedido se ha hecho correctamente"), open=True)
+                                content=flet.Text("Su pedido se ha hecho correctamente"), open=True,
+                                on_dismiss=lambda _:self.page.go("/"))
         else:
             self.page.dialog = flet.AlertDialog(title= flet.Text("Ha ocurrido un error"),
-                                content=flet.Text("Su pedido no ha podido realizarse"), open=True)
+                                content=flet.Text("Su pedido no ha podido realizarse"), open=True,
+                                on_dismiss=lambda _:self.page.go("/"))
         self.limpiar_productos()
         self.page.update()
         
@@ -198,37 +203,32 @@ class Pago():
 
         return True
 
+    def get_recogida(self) -> str:
+        """
+        Devuelve la fecha y hora de recogida selecionadas del pedido.
+        
+        :returns: un str con la fecha y hora. Formato yyyy-mm-dd hh:mm:ss
+        """
+        for option in self.drop.options:
+            if self.drop.value == option.key:
+                return str(option.data)+":00"
+        return None
+
     def cargar_dropdown(self) -> None:
         """
         Permite seleccionar una hora y minuto cargándolo cada 15 minutos,
         desde la hora actual al cierre.
         """
-
-        cierre = 2
+        ahora = datetime.now()
+        ahora += timedelta(days=1)
+        cierre = datetime(minute=00, hour=2, day=ahora.day, year=ahora.year, month=ahora.month)
         avance = 15
-        continuar:bool = True
 
-        h_actual = time.time()
-        h_local = time.localtime(h_actual)
-        h_num = time.strftime("%H:%M", h_local)
-        h_split=h_num.split(":")
-        h=int(h_split[0])
-        minutos = int(h_split[1])
-
-        while (minutos%avance)!=0:
-            minutos+=1
-            if minutos == 60:
-                minutos = 00
-        while h!=cierre:
-            while minutos!=0 | continuar:
-                self.drop.options.append(
-                    flet.dropdown.Option(str(h).zfill(2)+":"+str(minutos).zfill(2)))
-                minutos+=avance
-                if minutos >= 60:
-                    minutos = 00
-                    continuar=False
-            h+=1
-            continuar=True
-            if h == 24:
-                h = 0
-                self.manhana = True
+        hora = datetime.now()
+        hora.replace(second=0)
+        while (hora.minute%avance)!=0:
+            hora+=timedelta(minutes=1)
+        while(hora < cierre):
+            self.drop.options.append(
+                    flet.dropdown.Option(hora.strftime("%H:%M"), alignment=flet.alignment.center,data=hora.strftime("%Y-%m-%d %H:%M")))
+            hora += timedelta(minutes=avance)
