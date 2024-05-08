@@ -188,18 +188,18 @@ class Fila():
         self.page.update()
 
     def mostrar_info(self) -> None:
-        """Muestra la descripcion del objeto vinculado."""
+        """Muestra la descripcion del producto vinculado."""
         self.page.dialog = flet.AlertDialog(title= flet.Text(self.producto.nombre),
             content=flet.Text(self.producto.descripcion), open=True)
         self.page.update()
 
     def recortar(self, original:str) -> str:
         """
-        Ajusta el tamaño de un str. Si es menor o igual que 10 no lo
+        Ajusta el tamaño de un str. Si es menor o igual que 10 caracteres no lo
         cambia. Si es mayor lo reduce a siete y añade tres puntos.
 
         :param original: el str que se va a probar a reducir.
-        :returns: el str original o una versión reducida si era mayor de 10.
+        :returns: el str original o una versión reducida si era mayor de 10 caracteres.
         """
         if len(original) >10:
             return original[0:7]+"..."

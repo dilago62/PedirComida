@@ -66,7 +66,7 @@ class Carta():
     def cambiar_filtro(self, page:flet.Page):
         """Carga la tabla con los productos apropiados.
         
-        :param page: Se actualiza cuando os datos que se han cargado."""
+        :param page: Se actualiza cuando los datos se han cargado."""
         indice = self.tabs.selected_index
         tab:flet.Tab = self.tabs.tabs[indice]
         self.lv:flet.ListView = tab.content

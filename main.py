@@ -7,7 +7,7 @@ from pedir import Pago
 from menu import Menu
 import variables
 
-ACTUALIZAR=7
+__version__="0.3"
 
 class Inicio():
     """
@@ -43,7 +43,6 @@ class Interfaz():
         self.page:flet.Page = page
         self.aspecto_base()
         page.on_route_change=lambda _: self.cambiar_ruta()
-        self.barra_navegacion()
         page.go("/")
 
     def aspecto_base(self) -> None:
